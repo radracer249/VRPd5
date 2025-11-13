@@ -12,7 +12,7 @@ window.addEventListener("DOMContentLoaded",function() {
     let z = rnd(-20,20);
     createTree(x,0,z);
   }
-   //Task 2: Use the createCloud(...)  to add several clouds to the scene at various positions.
+   //Task 2: Use the createCloud(...)  to add several clouds to the scene at various positions
 
    //Task 4: Use the createHouse(...)  to add several houses to the scene at various positions.
 })
