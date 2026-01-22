@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>A-Frame City Simulation</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- A-Frame -->
+  <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+
+  <!-- Particle System (Rain) -->
+  <script src="https://cdn.jsdelivr.net/npm/aframe-particle-system-component@1.0.10/dist/aframe-particle-system-component.min.js"></script>
+
+  <!-- Simple movement component -->
+  <script>
+    AFRAME.registerComponent('drive', {
+      schema: {speed: {default: 0.02}},
+      tick: function () {
+        this.el.object3D.position.z += this.data.speed;
+        if (this.el.object3D.position.z > 20) {
+          this.el.object3D.position.z = -40;
+        }
+      }
+    });
+
+    AFRAME.registerComponent('walk', {
+      tick: function () {
+        this.el.object3D.position.x += 0.005;
+        if (this.el.object3D.position.x > 10) {
+          this.el.object3D.position.x = -10;
+        }
+      }
+    });
+  </script>
+</head>
+
+<body>
+<a-scene fog="type: exponential; density: 0.02; color: #aaa">
+
+  <!-- Assets -->
+  <a-assets>
+    <a-asset-item id="truck" src="https://cdn.aframe.io/test-models/models/glTF/CesiumMilkTruck/CesiumMilkTruck.gltf"></a-asset-item>
+    <audio id="engine" src="https://cdn.aframe.io/basic-guide/audio/backgroundnoise.wav"></audio>
+  </a-assets>
+
+  <!-- Camera + Cursor -->
+  <a-entity position="0 1.6 5">
+    <a-camera wasd-controls look-controls>
+      <a-cursor></a-cursor>
+    </a-camera>
+  </a-entity>
+
+  <!-- Sky Day / Night -->
+  <a-sky color="#87CEEB"
+    animation="property: color; from: #87CEEB; to: #001133; dur: 30000; dir: alternate; loop: true">
+  </a-sky>
+
+  <!-- Sun -->
+  <a-light type="directional" position="5 10 5" intensity="1"
+    animation="property: intensity; from: 1; to: 0.2; dur: 30000; dir: alternate; loop: true">
+  </a-light>
+
+  <!-- Moon -->
+  <a-light type="ambient" intensity="0.3"
+    animation="property: intensity; from: 0.2; to: 0.6; dur: 30000; dir: alternate; loop: true">
+  </a-light>
+
+  <!-- Ground -->
+  <a-plane rotation="-90 0 0" width="100" height="100" color="#555"></a-plane>
+
+  <!-- Roads -->
+  <a-plane rotation="-90 0 0" width="8" height="100" color="#222" position="0 0.01 0"></a-plane>
+
+  <!-- Buildings -->
+  <a-box position="-6 3 -10" width="4" height="6" depth="4" color="#999"></a-box>
+  <a-box position="6 4 -15" width="5" height="8" depth="5" color="#777"></a-box>
+  <a-box position="-6 5 -25" width="6" height="10" depth="6" color="#888"></a-box>
+
+  <!-- Trees (Swaying) -->
+  <a-cylinder position="10 1 -10" height="2" radius="0.3" color="#5B3A29"></a-cylinder>
+  <a-sphere position="10 3 -10" radius="1.5" color="#2E8B57"
+    animation="property: rotation; to: 0 0 5; dir: alternate; loop: true; dur: 2000">
+  </a-sphere>
+
+  <!-- Traffic Light -->
+  <a-box position="2 2 -5" width="0.5" height="3" depth="0.5" color="#222"></a-box>
+  <a-sphere position="2 3 -5" radius="0.2" color="red"
+    animation="property: color; from: red; to: green; dur: 5000; dir: alternate; loop: true">
+  </a-sphere>
+
+  <!-- Vehicles -->
+  <a-entity gltf-model="#truck" position="0 0 -30" scale="0.5 0.5 0.5"
+    drive="speed:0.05"
+    sound="src:#engine; autoplay:true; loop:true">
+  </a-entity>
+
+  <a-entity gltf-model="#truck" position="1.5 0 -50" scale="0.4 0.4 0.4"
+    drive="speed:0.03">
+  </a-entity>
+
+  <!-- Police Vehicle -->
+  <a-box position="-1.5 0.5 -20" width="1" height="0.5" depth="2" color="blue"
+    drive="speed:0.06"
+    animation="property: material.color; from: blue; to: red; dur: 500; loop:true">
+  </a-box>
+
+  <!-- Pedestrians -->
+  <a-box position="-8 0.5 -5" width="0.5" height="1.6" depth="0.5" color="#FFDAB9" walk></a-box>
+  <a-box position="-9 0.5 -8" width="0.5" height="1.6" depth="0.5" color="#FFE4C4" walk></a-box>
+
+  <!-- Rain -->
+  <a-entity particle-system="
+    preset: rain;
+    particleCount: 3000;
+    velocityValue: 0 -10 0;
+    color: #AAD">
+  </a-entity>
+
+  <!-- Click Interaction -->
+  <a-box position="0 1 -3" color="#4CC3D9"
+    event-set__enter="_event: click; material.color: yellow">
+  </a-box>
+
+</a-scene>
+</body>
+</html>
