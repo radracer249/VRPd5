@@ -1,66 +1,50 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>A-Frame 2026 City VR</title>
-    <!-- Use latest A-Frame 1.7.0 for 2026 browser compatibility -->
+    <title>A-Frame City 2026</title>
+    <!-- Use 1.7.0 for the most stable 2026 browser experience -->
     <script src="https://aframe.io"></script>
-    <script src="https://unpkg.com"></script>
     <script src="https://cdn.jsdelivr.net"></script>
-
-    <script>
-      // Movement component for traffic
-      AFRAME.registerComponent('drive-logic', {
-        schema: { speed: {type: 'number', default: 0.2} },
-        tick: function (time, timeDelta) {
-          let pos = this.el.getAttribute('position');
-          pos.z += this.data.speed;
-          if (pos.z > 40) pos.z = -40;
-          this.el.setAttribute('position', pos);
-        }
-      });
-    </script>
+    <script src="https://unpkg.com"></script>
   </head>
-
   <body>
-    <!-- timeout="5000" forces the scene to load even if assets fail -->
-    <a-scene renderer="colorManagement: true" poolSize="20">
+    <!-- timeout=1 ensures the scene doesn't wait for failing assets -->
+    <a-scene loading-screen="dotsColor: white; backgroundColor: black" shadow="type: pcfsoft">
       
-      <a-assets timeout="5000">
-        <!-- Added crossorigin="anonymous" to prevent the '3 dots' hang -->
-        <a-asset-item id="car-model" src="https://cdn.jsdelivr.net" crossorigin="anonymous"></a-asset-item>
-        <audio id="engine" src="https://cdn.freesound.org" crossorigin="anonymous"></audio>
+      <a-assets timeout="1">
+        <!-- Using a more reliable 2026 CDN link with crossorigin -->
+        <a-asset-item id="car" src="https://cdn.jsdelivr.net" crossorigin="anonymous"></a-asset-item>
       </a-assets>
 
-      <!-- Player & Controls -->
+      <!-- Player with WASD/Mouse controls -->
       
         
-          <a-cursor></a-cursor>
+          <a-cursor color="#FF0000"></a-cursor>
         
       
 
-      <!-- Environment & Day/Night Cycle -->
+      <!-- Dynamic City Environment -->
       
 
-      <!-- Roads and Moving Traffic -->
-      <a-plane rotation="-90 0 0" width="12" height="100" color="#111" position="0 0.02 0"></a-plane>
-
-      <!-- Car 1 (Model) -->
+      <!-- Road & Traffic -->
+      <a-plane position="0 0.02 0" rotation="-90 0 0" width="10" height="200" color="#222"></a-plane>
+      
+      <!-- Moving Car (Duck Model fallback) -->
+      
       
 
-      <!-- Bus (Animated Shape) -->
-      <a-box color="orange" position="3 1.2 10" width="2.2" height="2" depth="7" drive-logic="speed: -0.1">
-        <a-text value="CITY BUS" align="center" position="0 2.5 0" color="black" side="double"></a-text>
+      <!-- Bus (Geometric) -->
+      <a-box color="yellow" position="2 1.5 30" width="2.5" height="2.5" depth="8"
+             animation="property: position; to: 2 1.5 -50; dur: 12000; loop: true; easing: linear">
+        <a-text value="CITY BUS" align="center" position="0 3 0" color="black" side="double"></a-text>
       </a-box>
 
-      <!-- Sways Trees -->
+      <!-- Weather/Swaying Trees -->
       
-        <a-cylinder color="#3d2b1f" radius="0.2" height="3"></a-cylinder>
-        <a-sphere color="green" radius="1.5" position="0 3 0"></a-sphere>
+        <a-cylinder color="#3b2b1f" radius="0.2" height="3"></a-cylinder>
+        <a-sphere color="#2d5a27" radius="1.5" position="0 3 0"></a-sphere>
       
-
-      <!-- Weather (Fog Toggle via Inspector Ctrl+Alt+I) -->
-      <a-sky color="#87CEEB"></a-sky>
 
     </a-scene>
   </body>
