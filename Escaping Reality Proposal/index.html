@@ -1,50 +1,125 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
   <head>
     <meta charset="utf-8">
-    <title>A-Frame City 2026</title>
-    <!-- Use 1.7.0 for the most stable 2026 browser experience -->
-    <script src="https://aframe.io"></script>
-    <script src="https://cdn.jsdelivr.net"></script>
-    <script src="https://unpkg.com"></script>
+    <title>A-Frame Desert Road World</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
   </head>
+
   <body>
-    <!-- timeout=1 ensures the scene doesn't wait for failing assets -->
-    <a-scene loading-screen="dotsColor: white; backgroundColor: black" shadow="type: pcfsoft">
-      
-      <a-assets timeout="1">
-        <!-- Using a more reliable 2026 CDN link with crossorigin -->
-        <a-asset-item id="car" src="https://cdn.jsdelivr.net" crossorigin="anonymous"></a-asset-item>
-      </a-assets>
+    <a-scene background="color: #87CEEB">
 
-      <!-- Player with WASD/Mouse controls -->
-      
-        
-          <a-cursor color="#FF0000"></a-cursor>
-        
-      
+      <!-- Camera -->
+      <a-entity position="0 1.6 6">
+        <a-camera wasd-controls look-controls></a-camera>
+      </a-entity>
 
-      <!-- Dynamic City Environment -->
-      
+      <!-- Lighting -->
+      <a-light type="ambient" intensity="0.4"></a-light>
 
-      <!-- Road & Traffic -->
-      <a-plane position="0 0.02 0" rotation="-90 0 0" width="10" height="200" color="#222"></a-plane>
-      
-      <!-- Moving Car (Duck Model fallback) -->
-      
-      
+      <!-- Sun -->
+      <a-light
+        type="directional"
+        intensity="0.9"
+        position="10 20 10">
+      </a-light>
 
-      <!-- Bus (Geometric) -->
-      <a-box color="yellow" position="2 1.5 30" width="2.5" height="2.5" depth="8"
-             animation="property: position; to: 2 1.5 -50; dur: 12000; loop: true; easing: linear">
-        <a-text value="CITY BUS" align="center" position="0 3 0" color="black" side="double"></a-text>
+      <!-- Moon -->
+      <a-light
+        type="point"
+        color="#bcdcff"
+        intensity="0.4"
+        position="-10 15 -10">
+      </a-light>
+
+      <!-- Ground -->
+      <a-plane
+        rotation="-90 0 0"
+        width="100"
+        height="100"
+        color="#C2B280">
+      </a-plane>
+
+      <!-- Dirt Road -->
+      <a-plane
+        rotation="-90 0 0"
+        width="6"
+        height="80"
+        position="0 0.01 -20"
+        color="#8B6B4A">
+      </a-plane>
+
+      <!-- ================= PALM TREES ================= -->
+      <a-entity position="5 0 -10">
+        <a-cylinder height="4" radius="0.3" color="#8B5A2B"></a-cylinder>
+        <a-sphere
+          position="0 2.5 0"
+          radius="1.5"
+          color="#2E8B57"
+          animation="property: rotation; to: 0 0 10; dir: alternate; dur: 2000; loop: true">
+        </a-sphere>
+      </a-entity>
+
+      <a-entity position="-5 0 -15">
+        <a-cylinder height="4" radius="0.3" color="#8B5A2B"></a-cylinder>
+        <a-sphere
+          position="0 2.5 0"
+          radius="1.5"
+          color="#2E8B57"
+          animation="property: rotation; to: 0 0 -10; dir: alternate; dur: 2500; loop: true">
+        </a-sphere>
+      </a-entity>
+
+      <!-- ================= CARS ================= -->
+      <a-box
+        color="#FF0000"
+        depth="2"
+        height="1"
+        width="1.5"
+        position="-2 0.5 10"
+        animation="property: position; to: -2 0.5 -60; dur: 8000; loop: true">
       </a-box>
 
-      <!-- Weather/Swaying Trees -->
-      
-        <a-cylinder color="#3b2b1f" radius="0.2" height="3"></a-cylinder>
-        <a-sphere color="#2d5a27" radius="1.5" position="0 3 0"></a-sphere>
-      
+      <a-box
+        color="#0000FF"
+        depth="2"
+        height="1"
+        width="1.5"
+        position="2 0.5 -60"
+        animation="property: position; to: 2 0.5 10; dur: 7000; loop: true">
+      </a-box>
+
+      <!-- ================= BUS ================= -->
+      <a-box
+        color="#FFD700"
+        depth="4"
+        height="1.5"
+        width="2"
+        position="0 0.75 15"
+        animation="property: position; to: 0 0.75 -70; dur: 10000; loop: true">
+      </a-box>
+
+      <!-- ================= TRUCK ================= -->
+      <a-box
+        color="#555555"
+        depth="3"
+        height="1.2"
+        width="2"
+        position="3 0.6 -70"
+        animation="property: position; to: 3 0.6 15; dur: 9000; loop: true">
+      </a-box>
+
+      <!-- Sky -->
+      <a-sky color="#88ccee"></a-sky>
+
+      <!-- Floating Text -->
+      <a-text
+        value="Desert Road VR World"
+        position="-3 4 -8"
+        width="8"
+        color="#000">
+      </a-text>
 
     </a-scene>
   </body>
