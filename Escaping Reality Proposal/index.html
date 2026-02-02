@@ -1,163 +1,134 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8">
-    <title>A-Frame Desert Traffic World</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
-  </head>
+<head>
+  <meta charset="utf-8">
+  <title>Desert City VR Simulator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
 
-  <body>
-    <a-scene>
+  <!-- ================= TRAFFIC LOGIC ================= -->
+  <script>
+    AFRAME.registerComponent('traffic-light', {
+      schema: { state: { default: 'red' } },
+      init() {
+        setInterval(() => {
+          this.el.setAttribute('traffic-light', 'state: green');
+          setTimeout(() => {
+            this.el.setAttribute('traffic-light', 'state: yellow');
+            setTimeout(() => {
+              this.el.setAttribute('traffic-light', 'state: red');
+            }, 2000);
+          }, 6000);
+        }, 10000);
+      }
+    });
 
-      <!-- ================= CAMERA ================= -->
-      <a-entity position="0 1.6 8">
-        <a-camera wasd-controls look-controls></a-camera>
-      </a-entity>
+    AFRAME.registerComponent('car-ai', {
+      tick() {
+        const light = document.querySelector('#mainLight');
+        if (!light) return;
 
-      <!-- ================= DAY / NIGHT CYCLE ================= -->
-      <a-sky
-        animation="property: color;
-                   from: #87CEEB;
-                   to: #0b1d3a;
-                   dir: alternate;
-                   dur: 20000;
-                   loop: true">
-      </a-sky>
+        const state = light.getAttribute('traffic-light').state;
+        if (state === 'red') {
+          this.el.setAttribute('animation', 'pauseEvents: stop');
+        } else {
+          this.el.setAttribute('animation', 'pauseEvents: ');
+        }
+      }
+    });
 
-      <!-- Sun -->
-      <a-light
-        type="directional"
-        intensity="1"
-        position="10 20 10"
-        animation="property: intensity;
-                   from: 1;
-                   to: 0;
-                   dir: alternate;
-                   dur: 20000;
-                   loop: true">
-      </a-light>
+    AFRAME.registerComponent('police-patrol', {
+      init() {
+        this.el.setAttribute('animation',
+          'property: position; dir: alternate; dur: 8000; loop: true; to: -4 0.6 -40');
+      }
+    });
+  </script>
+</head>
 
-      <!-- Moon -->
-      <a-light
-        type="point"
-        color="#bcdcff"
-        intensity="0"
-        position="-10 15 -10"
-        animation="property: intensity;
-                   from: 0;
-                   to: 0.6;
-                   dir: alternate;
-                   dur: 20000;
-                   loop: true">
-      </a-light>
+<body>
+<a-scene>
 
-      <!-- Ambient -->
-      <a-light type="ambient" intensity="0.4"></a-light>
+  <!-- ================= CAMERA ================= -->
+  <a-entity position="0 1.6 10">
+    <a-camera wasd-controls look-controls></a-camera>
+  </a-entity>
 
-      <!-- ================= GROUND ================= -->
-      <a-plane rotation="-90 0 0" width="120" height="120" color="#C2B280"></a-plane>
+  <!-- ================= SKY DAY/NIGHT ================= -->
+  <a-sky animation="property: color; from:#87CEEB; to:#0b1d3a; dir:alternate; dur:25000; loop:true"></a-sky>
 
-      <!-- Dirt Road -->
-      <a-plane
-        rotation="-90 0 0"
-        width="6"
-        height="100"
-        position="0 0.01 -30"
-        color="#8B6B4A">
-      </a-plane>
+  <!-- Lights -->
+  <a-light type="ambient" intensity="0.4"></a-light>
+  <a-light type="directional" intensity="1" position="10 20 10"
+           animation="property:intensity; from:1; to:0; dir:alternate; dur:25000; loop:true"></a-light>
+  <a-light type="point" color="#bcdcff" intensity="0"
+           position="-10 15 -10"
+           animation="property:intensity; from:0; to:0.6; dir:alternate; dur:25000; loop:true"></a-light>
 
-      <!-- ================= TRAFFIC LIGHT ================= -->
-      <a-entity position="-3 0 -5">
-        <a-cylinder height="4" radius="0.1" color="#333"></a-cylinder>
+  <!-- ================= PROCEDURAL DUNES ================= -->
+  <a-entity>
+    <a-plane rotation="-90 0 0" width="120" height="120" color="#C2B280"></a-plane>
 
-        <!-- Red -->
-        <a-sphere
-          position="0 3 0.2"
-          radius="0.2"
-          color="red"
-          animation="property: visible; from: true; to: false; dur: 8000; loop: true">
-        </a-sphere>
+    <a-plane rotation="-90 0 0" width="30" height="30" position="-20 0.05 -30"
+             color="#d2b48c" rotation=" -90 0 5"></a-plane>
+    <a-plane rotation="-90 0 0" width="30" height="30" position="20 0.08 -50"
+             color="#c9ae78" rotation=" -90 0 -6"></a-plane>
+  </a-entity>
 
-        <!-- Yellow -->
-        <a-sphere
-          position="0 2.5 0.2"
-          radius="0.2"
-          color="yellow"
-          visible="false"
-          animation="property: visible; delay: 8000; from: false; to: true; dur: 2000; loop: true">
-        </a-sphere>
+  <!-- ================= ROAD ================= -->
+  <a-plane rotation="-90 0 0" width="6" height="100" position="0 0.1 -40" color="#8B6B4A"></a-plane>
 
-        <!-- Green -->
-        <a-sphere
-          position="0 2 0.2"
-          radius="0.2"
-          color="green"
-          visible="false"
-          animation="property: visible; delay: 10000; from: false; to: true; dur: 8000; loop: true">
-        </a-sphere>
-      </a-entity>
+  <!-- ================= TRAFFIC LIGHT ================= -->
+  <a-entity id="mainLight" traffic-light position="-3 0 -5">
+    <a-cylinder height="4" radius="0.1" color="#333"></a-cylinder>
+    <a-sphere radius="0.2" position="0 3 0.3" color="red"></a-sphere>
+    <a-sphere radius="0.2" position="0 2.5 0.3" color="yellow"></a-sphere>
+    <a-sphere radius="0.2" position="0 2 0.3" color="green"></a-sphere>
+  </a-entity>
 
-      <!-- ================= PALM TREE ================= -->
-      <a-entity position="5 0 -10">
-        <a-cylinder height="4" radius="0.3" color="#8B5A2B"></a-cylinder>
-        <a-sphere
-          position="0 2.7 0"
-          radius="1.6"
-          color="#2E8B57"
-          animation="property: rotation; to: 0 0 10; dir: alternate; dur: 2500; loop: true">
-        </a-sphere>
-      </a-entity>
+  <!-- ================= CAR ================= -->
+  <a-entity car-ai
+    position="0 0.6 20"
+    animation="property: position; to: 0 0.6 -80; dur: 10000; loop: true">
 
-      <!-- ================= VEHICLE (WITH WHEELS) ================= -->
-      <a-entity
-        position="0 0.6 15"
-        animation="property: position; to: 0 0.6 -80; dur: 9000; loop: true">
+    <a-box depth="4" height="1.2" width="2" color="#ff0000"></a-box>
 
-        <!-- Body -->
-        <a-box depth="4" height="1.2" width="2" color="#FF0000"></a-box>
+    <!-- Wheels -->
+    <a-cylinder position="-0.9 -0.6 1.5" rotation="90 0 0" radius="0.3" height="0.3"
+      animation="property:rotation; to:450 0 0; dur:800; loop:true"></a-cylinder>
+    <a-cylinder position="0.9 -0.6 1.5" rotation="90 0 0" radius="0.3" height="0.3"
+      animation="property:rotation; to:450 0 0; dur:800; loop:true"></a-cylinder>
+  </a-entity>
 
-        <!-- Wheels -->
-        <a-cylinder position="-0.9 -0.6 1.5" rotation="90 0 0" radius="0.3" height="0.3"
-          animation="property: rotation; to: 450 0 0; dur: 800; loop: true"></a-cylinder>
+  <!-- ================= BUS ================= -->
+  <a-box car-ai color="#FFD700" depth="6" height="1.5" width="2.5"
+    position="2 0.75 25"
+    animation="property: position; to: 2 0.75 -90; dur: 14000; loop: true"></a-box>
 
-        <a-cylinder position="0.9 -0.6 1.5" rotation="90 0 0" radius="0.3" height="0.3"
-          animation="property: rotation; to: 450 0 0; dur: 800; loop: true"></a-cylinder>
+  <!-- ================= POLICE CAR ================= -->
+  <a-entity police-patrol position="4 0.6 -10">
+    <a-box depth="4" height="1.2" width="2" color="#0033ff"></a-box>
+    <a-light type="point" color="red" intensity="1" position="-0.5 0.6 0"></a-light>
+    <a-light type="point" color="blue" intensity="1" position="0.5 0.6 0"></a-light>
+  </a-entity>
 
-        <a-cylinder position="-0.9 -0.6 -1.5" rotation="90 0 0" radius="0.3" height="0.3"
-          animation="property: rotation; to: 450 0 0; dur: 800; loop: true"></a-cylinder>
+  <!-- ================= DESERT TOWN ================= -->
+  <a-box position="12 3 -30" depth="6" height="6" width="6" color="#c2a679"></a-box>
+  <a-box position="-12 4 -45" depth="8" height="8" width="5" color="#b89b6a"></a-box>
+  <a-box position="10 2 -60" depth="5" height="4" width="4" color="#d4b483"></a-box>
 
-        <a-cylinder position="0.9 -0.6 -1.5" rotation="90 0 0" radius="0.3" height="0.3"
-          animation="property: rotation; to: 450 0 0; dur: 800; loop: true"></a-cylinder>
-      </a-entity>
+  <!-- ================= AMBIENT SOUND ================= -->
+  <a-entity sound="src: https://cdn.aframe.io/basic-guide/audio/backgroundnoise.wav;
+                   autoplay: true;
+                   loop: true;
+                   volume: 0.4"></a-entity>
 
-      <!-- ================= BUS ================= -->
-      <a-box
-        color="#FFD700"
-        depth="6"
-        height="1.5"
-        width="2.5"
-        position="2 0.75 -80"
-        animation="property: position; to: 2 0.75 15; dur: 12000; loop: true">
-      </a-box>
+  <!-- ================= TEXT ================= -->
+  <a-text value="Desert City VR Simulator"
+          position="-4 6 -10"
+          width="12"
+          color="#000"></a-text>
 
-      <!-- ================= DESERT ROCKS ================= -->
-      <a-box position="-8 0.5 -20" depth="2" height="1" width="2" color="#7d6b55"></a-box>
-      <a-box position="9 0.4 -30" depth="1.5" height="0.8" width="1.5" color="#6b5b47"></a-box>
-      <a-box position="-6 0.6 -40" depth="2.5" height="1.2" width="2" color="#8a7a65"></a-box>
-
-      <!-- ================= BUILDINGS ================= -->
-      <a-box position="12 3 -35" depth="6" height="6" width="6" color="#c2a679"></a-box>
-      <a-box position="-12 4 -50" depth="8" height="8" width="5" color="#b89b6a"></a-box>
-
-      <!-- ================= TEXT ================= -->
-      <a-text
-        value="Desert Traffic VR"
-        position="-3 5 -8"
-        width="10"
-        color="#000">
-      </a-text>
-
-    </a-scene>
-  </body>
+</a-scene>
+</body>
 </html>
